@@ -6,6 +6,7 @@ const App = () => {
 
   const [counters, setCounters] = useState(new Array(5).fill( {
     customers:[
+      // Array of item count of customers
     ],
     totalItems:0
   }));
@@ -13,36 +14,38 @@ const App = () => {
 
   const addCustomerToCounter = () => {
     let lessItemCounterIndex = 0;
-    let lesserItemCount = counters[0]?.totalItems;
     for(let counterIndex=0; counterIndex< counters.length; counterIndex++){
-      if(counters[counterIndex].totalItems < lesserItemCount){
-        lesserItemCount = counters[counterIndex].totalItems;
+      if(counters[counterIndex].totalItems < counters[lessItemCounterIndex].totalItems){
         lessItemCounterIndex = counterIndex;
       }
     }
 
     const newCounters = counters.map((counter, counterNumber) => {
       if(counterNumber === lessItemCounterIndex){
-        const updatedCounter = { 
-            customers : [ ...counter.customers, { id : counter.customers.length+1, itemCount : Number(itemCount) } ] , 
-            totalItems : counter.totalItems + Number(itemCount)
+        return {
+          ...counter,
+          customers: [ ... counter.customers, Number(itemCount)],
+          totalItems: counter.totalItems + Number(itemCount)
         }
-        return updatedCounter
-      }else{
-        return counter;
       }
-    })
+      return counter
+    });
+
     setCounters(newCounters);
   }
 
   const serveCustomer = ({counterIndex}) => {
     const updatedCounters = counters.map((counter, index) => {
+      if(counter.customers.length === 0) return counter;
       if(index === counterIndex){
-        const firstCustomerItemCount = counter.customers.shift()?.itemCount || 0;
-        return { ...counter, totalItems : counter.totalItems - firstCustomerItemCount }
-      }else{
-        return counter;
+       const firstItemCount = counter.customers[0] || 0;
+       return {
+        ...counter,
+        totalItems : counter.totalItems - firstItemCount,
+        customers : counter.customers.slice(1)
+       }
       }
+      return counter;
     })
 
     setCounters(updatedCounters);
@@ -71,9 +74,9 @@ const App = () => {
               <h2 className="text-center font-medium text-[24px]">Counter No : {index+1}</h2>
               <div className="flex flex-col gap-1">
                 {
-                  counter?.customers.length > 0 ? counter?.customers.map((customer) => (
-                    <div className="w-full p-1 bg-green-600 text-white font-medium" key={customer.id}>
-                      <p>ItemsCount : <span className="text-[24px]">{customer.itemCount}</span></p>
+                  counter?.customers.length > 0 ? counter?.customers.map((ItemCount, customerIndex) => (
+                    <div className="w-full p-1 bg-green-600 text-white font-medium" key={customerIndex}>
+                      <p>ItemsCount : <span className="text-[24px]">{ItemCount}</span></p>
                     </div>
                   )):(
                     <div>
