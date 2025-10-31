@@ -1,74 +1,100 @@
-import { useState } from 'react'
+import { useState } from "react";
 
-function App() {
+const App = () => {
 
   const [itemCount, setItemCount] = useState(0);
 
-  const [stores, setStores] = useState( new Array(5).fill({
-      items:[],
-      totalQuantity:0
-    }));
+  const [counters, setCounters] = useState(new Array(5).fill( {
+    customers:[
+    ],
+    totalItems:0
+  }));
 
 
-  const addItems = () => {
-    let lesssQuantityStoreIndex = 0;
-    let lessQuantity = stores[0].totalQuantity || 0;
-
-    for(let storeIndex = 0; storeIndex < stores.length; storeIndex++) {
-      if(stores[storeIndex]?.totalQuantity < lessQuantity){
-        lessQuantity = stores[storeIndex]?.totalQuantity;
-        lesssQuantityStoreIndex = storeIndex;
+  const addCustomerToCounter = () => {
+    let lessItemCounterIndex = 0;
+    let lesserItemCount = counters[0]?.totalItems;
+    for(let counterIndex=0; counterIndex< counters.length; counterIndex++){
+      if(counters[counterIndex].totalItems < lesserItemCount){
+        lesserItemCount = counters[counterIndex].totalItems;
+        lessItemCounterIndex = counterIndex;
       }
     }
 
+    const newCounters = counters.map((counter, counterNumber) => {
+      if(counterNumber === lessItemCounterIndex){
+        const updatedCounter = { 
+            customers : [ ...counter.customers, { id : counter.customers.length+1, itemCount : Number(itemCount) } ] , 
+            totalItems : counter.totalItems + Number(itemCount)
+        }
+        return updatedCounter
+      }else{
+        return counter;
+      }
+    })
+    setCounters(newCounters);
+  }
 
-      const newStores = [...stores];
+  const serveCustomer = ({counterIndex}) => {
+    const updatedCounters = counters.map((counter, index) => {
+      if(index === counterIndex){
+        const firstCustomerItemCount = counter.customers.shift()?.itemCount || 0;
+        return { ...counter, totalItems : counter.totalItems - firstCustomerItemCount }
+      }else{
+        return counter;
+      }
+    })
 
-      const targetStore = newStores[lesssQuantityStoreIndex];
+    setCounters(updatedCounters);
+  }
 
-      targetStore.items.push({ quantity: itemCount, itemId: targetStore.items.length + 1 });
 
-      targetStore.totalQuantity += itemCount;
-
-      newStores[lesssQuantityStoreIndex] = targetStore;
-
-      setStores(newStores);
-
-  };
-
-  return (
-    <>
-      <div style={{ display: "flex", justifyContent:"center"}}>
-        <input
-          type="number"
-          placeholder="Type something..."
-          onChange={(e) => setItemCount(Number(e.target.value))}
+  return(
+    <div className="h-screen flex items-center justify-center flex-col">
+      <div className="flex items-center justify-center gap-2">
+        <input 
+          type="number" 
+          name="itemCount" id="itemCount" 
+          className="p-2 border border-green-700 rounded" 
           value={itemCount}
+          onChange={(e) => setItemCount(e.target.value)}
         />
-        <button onClick={() => addItems()}>Add</button>
+        <button type="button" className="p-2 bg-green-900 text-white font-medium cursor-pointer" onClick={addCustomerToCounter}>
+          Add Customer
+        </button>
       </div>
 
-      {/* Stores */}
-      <div style={{ display:"flex", justifyContent:"center", gap:"12px"}}>
+      <div className="flex items-center gap-2 mt-6">
         {
-          stores.map((store) => (
-            <div  style={{ width:"200px", border:"1px solid black", borderRadius:"8px", padding:"8px"}} key={store.id}>
-              <h2>Store {store.id}</h2>
-              <div>
-                {store.items.map((item) => (
-                  <div key={item.itemId}  style={{  border:"1px solid black",backgroundColor:"#f0f0f0", borderRadius:"4px", padding:"4px", marginBottom:"4px", display:"flex", justifyContent:"space-between"}}>
-                    <span>Item {item.itemId} : </span>
-                    <p>{item.quantity}</p>
-                  </div>
-                ))}
+          counters.map((counter, index) => (
+            <div className="w-50 min-h-15 border border-green-900 p-2" key={index}>
+              <h2 className="text-center font-medium text-[24px]">Counter No : {index+1}</h2>
+              <div className="flex flex-col gap-1">
+                {
+                  counter?.customers.length > 0 ? counter?.customers.map((customer) => (
+                    <div className="w-full p-1 bg-green-600 text-white font-medium" key={customer.id}>
+                      <p>ItemsCount : <span className="text-[24px]">{customer.itemCount}</span></p>
+                    </div>
+                  )):(
+                    <div>
+                      <p className="text-center">Empty Counter</p>
+                    </div>
+                  )
+                }
+              </div>
+              <div className="text-center mt-4">
+                <button 
+                className="p-2 bg-green-900 text-white font-medium cursor-pointer" 
+                onClick={() => serveCustomer({counterIndex: index})}>
+                  Serve
+                </button>
               </div>
             </div>
           ))
-           
         }
       </div>
-    </>
+    </div>
   )
 }
 
-export default App
+export default App;
