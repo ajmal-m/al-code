@@ -3,32 +3,52 @@ import { memo, useCallback, useState } from "react";
 
 const Products = memo(() => {
 
-    const [products, setProducts] = useState([
-        { name: "Laptop", category: "Electronics", quantity: 12 },
-        { name: "Smartphone", category: "Electronics", quantity: 0 },
-        { name: "Bluetooth Speaker", category: "Electronics", quantity: 7 },
-        { name: "Wireless Mouse", category: "Electronics", quantity: 15 },
-        { name: "Keyboard", category: "Electronics", quantity: 0 },
+    const [products, setProducts] = useState( [
+  { name: "Laptop", category: "Electronics", quantity: 12, price: 75000 },
+  { name: "Headphones", category: "Electronics", quantity: 0, price: 1500 },
+  { name: "Smartphone", category: "Electronics", quantity: 8, price: 45000 },
+  { name: "Smartwatch", category: "Electronics", quantity: 5, price: 12000 },
+  { name: "Bluetooth Speaker", category: "Electronics", quantity: 15, price: 3500 },
+  { name: "Coffee Mug", category: "Kitchen", quantity: 20, price: 299 },
+  { name: "Notebook", category: "Stationery", quantity: 50, price: 50 },
+  { name: "Pen Set", category: "Stationery", quantity: 100, price: 120 },
+  { name: "Desk Lamp", category: "Home Decor", quantity: 10, price: 999 },
+  { name: "Water Bottle", category: "Kitchen", quantity: 0, price: 499 },
+  { name: "Backpack", category: "Accessories", quantity: 25, price: 2200 },
+  { name: "Sunglasses", category: "Accessories", quantity: 12, price: 1500 },
+  { name: "Gaming Mouse", category: "Electronics", quantity: 30, price: 2500 },
+  { name: "Office Chair", category: "Furniture", quantity: 7, price: 8500 },
+  { name: "Yoga Mat", category: "Fitness", quantity: 0, price: 799 },
+  { name: "Dumbbell Set", category: "Fitness", quantity: 18, price: 3200 },
+  { name: "Electric Kettle", category: "Kitchen", quantity: 6, price: 1499 },
+  { name: "Bookshelf", category: "Furniture", quantity: 4, price: 10500 },
+  { name: "T-shirt", category: "Clothing", quantity: 40, price: 399 },
+  { name: "Jeans", category: "Clothing", quantity: 0, price: 899 },
+]
+);
 
-        { name: "T-shirt", category: "Clothing", quantity: 30 },
-        { name: "Jeans", category: "Clothing", quantity: 0 },
-        { name: "Jacket", category: "Clothing", quantity: 9 },
-        { name: "Socks", category: "Clothing", quantity: 40 },
-        { name: "Sneakers", category: "Footwear", quantity: 0 },
+    const [priceRange, setPriceRange] = useState({ min:0 , max:0})
 
-        { name: "Coffee Mug", category: "Home & Kitchen", quantity: 18 },
-        { name: "Blender", category: "Home & Kitchen", quantity: 0 },
-        { name: "Water Bottle", category: "Home & Kitchen", quantity: 22 },
-        { name: "Table Lamp", category: "Home & Kitchen", quantity: 3 },
-        { name: "Wall Clock", category: "Home & Kitchen", quantity: 0 },
 
-        { name: "Backpack", category: "Accessories", quantity: 11 },
-        { name: "Watch", category: "Accessories", quantity: 0 },
-        { name: "Sunglasses", category: "Accessories", quantity: 6 },
-        { name: "Wallet", category: "Accessories", quantity: 10 },
-        { name: "Belt", category: "Accessories", quantity: 0 },
+    // Update the price ranges
+    const updatePriceRange = useCallback((e) => {
+        try {
+           const { name, value} = e.target;
+           setPriceRange(_ => ({ ...priceRange , [name] : Number(value)}));
+        } catch (error) {
+            console.log(error);
+        }
+    },[ priceRange]);
 
-    ]);
+
+    const filterProductsByPrice = useCallback(() => {
+        try {
+            const newProducts = products.filter((p) => (p.price >= (priceRange.min ?? 0) && p.price <= (priceRange.max ?? Infinity)));
+            setProducts(newProducts)
+        } catch (error) {
+            console.log(error);
+        }
+    }, [priceRange, products])
 
     // Move out of stock into array end
     const moveToOutStockEnd = useCallback(() => {
@@ -86,7 +106,9 @@ const Products = memo(() => {
             console.log(error);
             
         }
-    },[products])
+    },[products]);
+
+
 
     return(
         <div className="h-screen flex flex-col bg-black overflow-y-scroll">
@@ -97,6 +119,30 @@ const Products = memo(() => {
                 >
                     Move Out of stock to End
                 </button>
+
+               <div>
+                    <label className="text-white" htmlFor="min-price">Min price</label>
+                    <input 
+                        type="number" name="min" 
+                        id="min-price" value={priceRange.min} 
+                        className="w-10 h-10 bg-blue-900 font-bold font-medium text-white ml-1"
+                        onChange={updatePriceRange}
+                    />
+               </div>
+               <div>
+                    <label className="text-white" htmlFor="max-price">Max Price</label>
+                    <input 
+                        type="number" name="max" 
+                        id="max-price" value={priceRange.max} 
+                        className="w-10 h-10 bg-blue-900 font-bold font-medium text-white ml-1"
+                        onChange={updatePriceRange}
+                    />
+               </div>
+
+               <button
+                className="h-10 bg-blue-900 font-bold font-medium text-white ml-1 px-1 cursor-pointer"
+                onClick={filterProductsByPrice}
+               >Filter</button>
             </div>
             <div className="flex items-center gap-2 flex-wrap justify-center">
                 {
@@ -104,6 +150,7 @@ const Products = memo(() => {
                         <div key={index} className="p-2 bg-blue-900 text-[white]">
                             <h1>{product.name}</h1>
                             <p className="text-sm">{product.category}</p>
+                            <p>$ {product.price}</p>
                             {
                                 product.quantity === 0 ? (
                                      <p className="text-red-700 font-bold italic">Out of stock</p>
