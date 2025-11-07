@@ -4,28 +4,30 @@ import { memo, useCallback, useMemo, useState } from "react";
 const Products = memo(() => {
 
     const [products, setProducts] = useState( [
-  { name: "Laptop", category: "Electronics", quantity: 12, price: 75000 },
-  { name: "Headphones", category: "Electronics", quantity: 0, price: 1500 },
-  { name: "Smartphone", category: "Electronics", quantity: 8, price: 45000 },
-  { name: "Smartwatch", category: "Electronics", quantity: 5, price: 12000 },
-  { name: "Bluetooth Speaker", category: "Electronics", quantity: 15, price: 3500 },
-  { name: "Coffee Mug", category: "Kitchen", quantity: 20, price: 299 },
-  { name: "Notebook", category: "Stationery", quantity: 50, price: 50 },
-  { name: "Pen Set", category: "Stationery", quantity: 100, price: 120 },
-  { name: "Desk Lamp", category: "Home Decor", quantity: 10, price: 999 },
-  { name: "Water Bottle", category: "Kitchen", quantity: 0, price: 499 },
-  { name: "Backpack", category: "Accessories", quantity: 25, price: 2200 },
-  { name: "Sunglasses", category: "Accessories", quantity: 12, price: 1500 },
-  { name: "Gaming Mouse", category: "Electronics", quantity: 30, price: 2500 },
-  { name: "Office Chair", category: "Furniture", quantity: 7, price: 8500 },
-  { name: "Yoga Mat", category: "Fitness", quantity: 0, price: 799 },
-  { name: "Dumbbell Set", category: "Fitness", quantity: 18, price: 3200 },
-  { name: "Electric Kettle", category: "Kitchen", quantity: 6, price: 1499 },
-  { name: "Bookshelf", category: "Furniture", quantity: 4, price: 10500 },
-  { name: "T-shirt", category: "Clothing", quantity: 40, price: 399 },
-  { name: "Jeans", category: "Clothing", quantity: 0, price: 899 },
-]
-);
+            { name: "Laptop", category: "Electronics", quantity: 12, price: 75000 },
+            { name: "Headphones", category: "Electronics", quantity: 0, price: 1500 },
+            { name: "Smartphone", category: "Electronics", quantity: 8, price: 45000 },
+            { name: "Smartwatch", category: "Electronics", quantity: 5, price: 12000 },
+            { name: "Bluetooth Speaker", category: "Electronics", quantity: 15, price: 3500 },
+            { name: "Coffee Mug", category: "Kitchen", quantity: 20, price: 299 },
+            { name: "Notebook", category: "Stationery", quantity: 50, price: 50 },
+            { name: "Pen Set", category: "Stationery", quantity: 100, price: 120 },
+            { name: "Desk Lamp", category: "Home Decor", quantity: 10, price: 999 },
+            { name: "Water Bottle", category: "Kitchen", quantity: 0, price: 499 },
+            { name: "Backpack", category: "Accessories", quantity: 25, price: 2200 },
+            { name: "Sunglasses", category: "Accessories", quantity: 12, price: 1500 },
+            { name: "Gaming Mouse", category: "Electronics", quantity: 30, price: 2500 },
+            { name: "Office Chair", category: "Furniture", quantity: 7, price: 8500 },
+            { name: "Yoga Mat", category: "Fitness", quantity: 0, price: 799 },
+            { name: "Dumbbell Set", category: "Fitness", quantity: 18, price: 3200 },
+            { name: "Electric Kettle", category: "Kitchen", quantity: 6, price: 1499 },
+            { name: "Bookshelf", category: "Furniture", quantity: 4, price: 10500 },
+            { name: "T-shirt", category: "Clothing", quantity: 40, price: 399 },
+            { name: "Jeans", category: "Clothing", quantity: 0, price: 899 },
+        ]
+    );
+
+    const [originalProducts] = useState(products);
 
     const [priceRange, setPriceRange] = useState({ min:0 , max:0})
 
@@ -116,9 +118,17 @@ const Products = memo(() => {
 
     const totalProductQuantity = useMemo(() => {
         return products.reduce((acc, product) => (acc  + product.quantity), 0);
-    },[products])
+    },[products]);
 
+    // Sort product Items By Price
+    const sortProductsByPrice = useCallback(() => {
+        setProducts( prevProduct=> [ ...prevProduct].sort((a,b) => (b.price-a.price)) );
+    }, [products]);
 
+    // Reset Product List
+    const resetProducts = useCallback(() => {
+        setProducts(originalProducts);
+    },[products]);
 
     return(
         <div className="h-screen flex flex-col bg-black overflow-y-scroll">
@@ -131,6 +141,20 @@ const Products = memo(() => {
                     className="bg-green-900 text-sm font-medium text-white p-2 rounded cursor-pointer"
                 >
                     Move Out of stock to End
+                </button>
+
+                 <button 
+                    onClick={sortProductsByPrice}
+                    className="bg-green-900 text-sm font-medium text-white p-2 rounded cursor-pointer"
+                >
+                    Sort
+                </button>
+
+                 <button 
+                    onClick={resetProducts}
+                    className="bg-green-900 text-sm font-medium text-white p-2 rounded cursor-pointer"
+                >
+                    Reset
                 </button>
 
                <div>
