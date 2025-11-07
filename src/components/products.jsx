@@ -1,6 +1,47 @@
 import { memo, useCallback, useMemo, useState } from "react";
 
 
+
+
+// Product Item component
+const ProductItem = memo(({ product , deleteConfirm , setDeleteConfirm ,deleteProduct }) => {
+    return(
+        <div  className="p-2 bg-blue-900 text-[white] relative">
+            <div className="absolute top-0 right-[2px] cursor-pointer">
+                {
+                    product.name === deleteConfirm ? (
+                        <button 
+                            className="bg-red-700 text-[9px] cursor-pointer"
+                            onClick={deleteProduct}
+                        >
+                            confirm
+                        </button>
+                    ) : (
+                        <button 
+                            className="w-4 bg-red-700 text-[9px] cursor-pointer"
+                            onClick={() => setDeleteConfirm(product.name)}
+                        >
+                            X
+                        </button>
+                    )
+                }
+            </div>
+            <h1>{product.name}</h1>
+            <p className="text-sm">{product.category}</p>
+            <p>$ {product.price}</p>
+            {
+                product.quantity === 0 ? (
+                        <p className="text-red-700 font-bold italic">Out of stock</p>
+                ):(
+                        <p> <span className="italic font-bold">{product.quantity}</span> Items available</p>
+                )
+            }
+        </div>
+    )
+})
+
+
+
 const Products = memo(() => {
 
     const [products, setProducts] = useState( [
@@ -112,12 +153,12 @@ const Products = memo(() => {
         }
     },[products]);
 
-
+    // Total Product price
     const totalProductPrice = useMemo(() => {
         return  products.reduce((acc, product) => (acc  + product.price), 0);
     },[products])
 
-
+    // Total product Quantity
     const totalProductQuantity = useMemo(() => {
         return products.reduce((acc, product) => (acc  + product.quantity), 0);
     },[products]);
@@ -198,37 +239,7 @@ const Products = memo(() => {
             <div className="flex items-center gap-2 flex-wrap justify-center">
                 {
                     products.map((product , index) => (
-                        <div key={index} className="p-2 bg-blue-900 text-[white] relative">
-                            <div className="absolute top-0 right-[2px] cursor-pointer">
-                                {
-                                    product.name === deleteConfirm ? (
-                                        <button 
-                                            className="bg-red-700 text-[9px] cursor-pointer"
-                                            onClick={deleteProduct}
-                                        >
-                                            confirm
-                                        </button>
-                                    ) : (
-                                        <button 
-                                            className="w-4 bg-red-700 text-[9px] cursor-pointer"
-                                            onClick={() => setDeleteConfirm(product.name)}
-                                        >
-                                            X
-                                        </button>
-                                    )
-                                }
-                            </div>
-                            <h1>{product.name}</h1>
-                            <p className="text-sm">{product.category}</p>
-                            <p>$ {product.price}</p>
-                            {
-                                product.quantity === 0 ? (
-                                     <p className="text-red-700 font-bold italic">Out of stock</p>
-                                ):(
-                                     <p> <span className="italic font-bold">{product.quantity}</span> Items available</p>
-                                )
-                            }
-                        </div>
+                        <ProductItem key={index} product={product} deleteProduct={deleteProduct} deleteConfirm={deleteConfirm} setDeleteConfirm={setDeleteConfirm} />
                     ))
                 }
             </div>
