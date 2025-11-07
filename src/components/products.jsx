@@ -29,7 +29,9 @@ const Products = memo(() => {
 
     const [originalProducts] = useState(products);
 
-    const [priceRange, setPriceRange] = useState({ min:0 , max:0})
+    const [priceRange, setPriceRange] = useState({ min:0 , max:0});
+
+    const [deleteConfirm, setDeleteConfirm] = useState("");
 
 
     // Update the price ranges
@@ -120,15 +122,27 @@ const Products = memo(() => {
         return products.reduce((acc, product) => (acc  + product.quantity), 0);
     },[products]);
 
+
     // Sort product Items By Price
     const sortProductsByPrice = useCallback(() => {
         setProducts( prevProduct=> [ ...prevProduct].sort((a,b) => (b.price-a.price)) );
     }, [products]);
 
+
     // Reset Product List
     const resetProducts = useCallback(() => {
         setProducts(originalProducts);
     },[products]);
+
+    // Delete products
+    const deleteProduct = useCallback(() => {
+       try {
+        const newProducts = [...products].filter((p) => p.name !== deleteConfirm);
+        setProducts(newProducts);
+       } catch (error) {
+        console.log(error);
+       } 
+    },[deleteConfirm])
 
     return(
         <div className="h-screen flex flex-col bg-black overflow-y-scroll">
@@ -184,7 +198,26 @@ const Products = memo(() => {
             <div className="flex items-center gap-2 flex-wrap justify-center">
                 {
                     products.map((product , index) => (
-                        <div key={index} className="p-2 bg-blue-900 text-[white]">
+                        <div key={index} className="p-2 bg-blue-900 text-[white] relative">
+                            <div className="absolute top-0 right-[2px] cursor-pointer">
+                                {
+                                    product.name === deleteConfirm ? (
+                                        <button 
+                                            className="bg-red-700 text-[9px] cursor-pointer"
+                                            onClick={deleteProduct}
+                                        >
+                                            confirm
+                                        </button>
+                                    ) : (
+                                        <button 
+                                            className="w-4 bg-red-700 text-[9px] cursor-pointer"
+                                            onClick={() => setDeleteConfirm(product.name)}
+                                        >
+                                            X
+                                        </button>
+                                    )
+                                }
+                            </div>
                             <h1>{product.name}</h1>
                             <p className="text-sm">{product.category}</p>
                             <p>$ {product.price}</p>
