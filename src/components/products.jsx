@@ -13,12 +13,22 @@ const productCategories = [
 
 
 // Product Item component
-const ProductItem = memo(({ product , deleteConfirm , setDeleteConfirm ,deleteProduct }) => {
+const ProductItem = memo(({ product , deleteConfirm , setDeleteConfirm ,deleteProduct , selectedProduct , setSelectedProduct , setUpdateName}) => {
+
+    const toggleProduct = useCallback((e) => {
+        const checked = e.target.checked;
+        if(checked){
+            setSelectedProduct(product.id);
+            setUpdateName(product.name);
+        }else{
+            setSelectedProduct("");
+        }
+    },[product , setSelectedProduct, setUpdateName]);
     return(
         <div  className="p-2 bg-blue-900 text-[white] relative">
             <div className="absolute top-0 right-[2px] cursor-pointer">
                 {
-                    product.name === deleteConfirm ? (
+                    product.id === deleteConfirm ? (
                         <button 
                             className="bg-red-700 text-[9px] cursor-pointer"
                             onClick={deleteProduct}
@@ -28,13 +38,18 @@ const ProductItem = memo(({ product , deleteConfirm , setDeleteConfirm ,deletePr
                     ) : (
                         <button 
                             className="w-4 bg-red-700 text-[9px] cursor-pointer"
-                            onClick={() => setDeleteConfirm(product.name)}
+                            onClick={() => setDeleteConfirm(product.id)}
                         >
                             X
                         </button>
                     )
                 }
             </div>
+            <input
+                type="checkbox" name="select-product" id="product-selection" 
+                onChange={toggleProduct}
+                checked={ selectedProduct === product.id }
+            />
             <h1>{product.name}</h1>
             <p className="text-sm">{product.category}</p>
             <p>$ {product.price}</p>
@@ -54,26 +69,29 @@ const ProductItem = memo(({ product , deleteConfirm , setDeleteConfirm ,deletePr
 const Products = memo(() => {
 
     const [products, setProducts] = useState( [
-            { name: "Laptop", category: "Electronics", quantity: 12, price: 75000 },
-            { name: "Headphones", category: "Electronics", quantity: 0, price: 1500 },
-            { name: "Smartphone", category: "Electronics", quantity: 8, price: 45000 },
-            { name: "Smartwatch", category: "Electronics", quantity: 5, price: 12000 },
-            { name: "Bluetooth Speaker", category: "Electronics", quantity: 15, price: 3500 },
-            { name: "Coffee Mug", category: "Kitchen", quantity: 20, price: 299 },
-            { name: "Notebook", category: "Stationery", quantity: 50, price: 50 },
-            { name: "Pen Set", category: "Stationery", quantity: 100, price: 120 },
-            { name: "Desk Lamp", category: "Home Decor", quantity: 10, price: 999 },
-            { name: "Water Bottle", category: "Kitchen", quantity: 0, price: 499 },
-            { name: "Backpack", category: "Accessories", quantity: 25, price: 2200 },
-            { name: "Sunglasses", category: "Accessories", quantity: 12, price: 1500 },
-            { name: "Gaming Mouse", category: "Electronics", quantity: 30, price: 2500 },
-            { name: "Office Chair", category: "Furniture", quantity: 7, price: 8500 },
-            { name: "Yoga Mat", category: "Fitness", quantity: 0, price: 799 },
-            { name: "Dumbbell Set", category: "Fitness", quantity: 18, price: 3200 },
-            { name: "Electric Kettle", category: "Kitchen", quantity: 6, price: 1499 },
-            { name: "Bookshelf", category: "Furniture", quantity: 4, price: 10500 },
-            { name: "T-shirt", category: "Clothing", quantity: 40, price: 399 },
-            { name: "Jeans", category: "Clothing", quantity: 0, price: 899 },
+              { id: 1, name: "Laptop", category: "Electronics", quantity: 12, price: 75000 },
+                { id: 2, name: "Headphones", category: "Electronics", quantity: 0, price: 1500 },
+                { id: 3, name: "Smartphone", category: "Electronics", quantity: 8, price: 45000 },
+                { id: 4, name: "Smartwatch", category: "Electronics", quantity: 5, price: 12000 },
+                { id: 5, name: "Bluetooth Speaker", category: "Electronics", quantity: 15, price: 3500 },
+
+                { id: 6, name: "Coffee Mug", category: "Kitchen", quantity: 20, price: 299 },
+                { id: 7, name: "Notebook", category: "Stationery", quantity: 50, price: 50 },
+                { id: 8, name: "Pen Set", category: "Stationery", quantity: 100, price: 120 },
+                { id: 9, name: "Desk Lamp", category: "Home Decor", quantity: 10, price: 999 },
+                { id: 10, name: "Water Bottle", category: "Kitchen", quantity: 0, price: 499 },
+
+                { id: 11, name: "Backpack", category: "Accessories", quantity: 25, price: 2200 },
+                { id: 12, name: "Sunglasses", category: "Accessories", quantity: 12, price: 1500 },
+                { id: 13, name: "Gaming Mouse", category: "Electronics", quantity: 30, price: 2500 },
+                { id: 14, name: "Office Chair", category: "Furniture", quantity: 7, price: 8500 },
+                { id: 15, name: "Yoga Mat", category: "Fitness", quantity: 0, price: 799 },
+
+                { id: 16, name: "Dumbbell Set", category: "Fitness", quantity: 18, price: 3200 },
+                { id: 17, name: "Electric Kettle", category: "Kitchen", quantity: 6, price: 1499 },
+                { id: 18, name: "Bookshelf", category: "Furniture", quantity: 4, price: 10500 },
+                { id: 19, name: "T-shirt", category: "Clothing", quantity: 40, price: 399 },
+                { id: 20, name: "Jeans", category: "Clothing", quantity: 0, price: 899 }
         ]
     );
 
@@ -82,6 +100,10 @@ const Products = memo(() => {
     const [priceRange, setPriceRange] = useState({ min:0 , max:0});
 
     const [deleteConfirm, setDeleteConfirm] = useState("");
+
+    const [ updatedName, setUpdatedName] = useState("");
+
+    const [selectedProduct, setSelectedProduct] = useState("");
 
 
     // Update the price ranges
@@ -187,16 +209,34 @@ const Products = memo(() => {
     // Delete products
     const deleteProduct = useCallback(() => {
        try {
-        const newProducts = [...products].filter((p) => p.name !== deleteConfirm);
+        const newProducts = [...products].filter((p) => p.id !== deleteConfirm);
         setProducts(newProducts);
        } catch (error) {
         console.log(error);
        } 
-    },[deleteConfirm])
+    },[deleteConfirm, products])
 
     const filterProductByCategory = useCallback((e) => {
         setProducts(() => [...products].filter((p) => p.category === e.target.value ));
-    },[products])
+    },[products]);
+
+    // Update product name
+    const updateProductName = useCallback((e) => {
+        setProducts(() => (
+            [...products].map((p) => {
+                if(p.id === selectedProduct){
+                    return { ...p, name: updatedName};
+                }else{
+                    return p;
+                }
+            })
+        ))
+    },[products , updatedName]);
+
+
+    const setUpdateName = useCallback((val) => {
+        setUpdatedName(val);
+    },[updatedName])
 
     return(
         <div className="h-screen flex flex-col bg-black overflow-y-scroll">
@@ -233,7 +273,7 @@ const Products = memo(() => {
                     <option value="">All category</option>
                     {
                         productCategories.map((cat) => (
-                             <option value={cat}>{cat}</option>
+                             <option value={cat} key={cat}>{cat}</option>
                         ))
                     }
                 </select>
@@ -265,10 +305,31 @@ const Products = memo(() => {
             <div className="flex items-center gap-2 flex-wrap justify-center">
                 {
                     products.map((product , index) => (
-                        <ProductItem key={index} product={product} deleteProduct={deleteProduct} deleteConfirm={deleteConfirm} setDeleteConfirm={setDeleteConfirm} />
+                        <ProductItem 
+                            key={index} product={product} deleteProduct={deleteProduct} 
+                            deleteConfirm={deleteConfirm} setDeleteConfirm={setDeleteConfirm} 
+                            selectedProduct={selectedProduct}
+                            setSelectedProduct={setSelectedProduct}
+                            setUpdateName={setUpdateName}
+                        />
                     ))
                 }
             </div>
+
+           {
+            selectedProduct && (
+                <div>
+                    <input 
+                        type="text" name="product-name" id="product-name"   
+                        className="h-10 bg-blue-900 font-bold font-medium text-white ml-1 rounded"
+                        placeholder="new product name"
+                        value={updatedName}
+                        onChange={(e) => setUpdatedName(e.target.value)}
+                    />
+                    <button onClick={updateProductName}  className="w-30 h-10 bg-blue-900 font-bold font-medium text-white ml-1 rounded">Submit</button>
+                </div>
+            )
+           }
         </div>
     )
 });
