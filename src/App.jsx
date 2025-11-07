@@ -1,12 +1,9 @@
-import { useState } from "react";
-import Counter from "./qa/counter";
-import CategorySelection from "./qa/categorySelection";
+import Test from "./qa/test";
 
 const App = () => {
 
   return(
-    // <Counter/>
-    <CategorySelection/>
+    <Test/>
   )
 }
 
