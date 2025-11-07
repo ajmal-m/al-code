@@ -1,4 +1,4 @@
-import { memo, useCallback, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 
 
 const Products = memo(() => {
@@ -109,10 +109,23 @@ const Products = memo(() => {
     },[products]);
 
 
+    const totalProductPrice = useMemo(() => {
+        return  products.reduce((acc, product) => (acc  + product.price), 0);
+    },[products])
+
+
+    const totalProductQuantity = useMemo(() => {
+        return products.reduce((acc, product) => (acc  + product.quantity), 0);
+    },[products])
+
+
 
     return(
         <div className="h-screen flex flex-col bg-black overflow-y-scroll">
             <div className="flex items-center justify-center my-2 gap-2">
+                <p className="text-white font-medium font-bold"> Total Price : $ {totalProductPrice}</p>
+                <p className="text-white font-medium font-bold ml-3"> Total Quantity : {totalProductQuantity}</p>
+
                 <button 
                     onClick={moveToOutStockEnd}
                     className="bg-green-900 text-sm font-medium text-white p-2 rounded cursor-pointer"
