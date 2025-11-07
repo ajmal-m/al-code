@@ -1,6 +1,15 @@
 import { memo, useCallback, useMemo, useState } from "react";
 
-
+const productCategories = [
+    "Electronics",
+    "Stationery",
+    "Kitchen",
+    "Home Decor",
+    "Accessories",
+    "Furniture",
+    "Fitness",
+    "Clothing"
+]
 
 
 // Product Item component
@@ -185,6 +194,10 @@ const Products = memo(() => {
        } 
     },[deleteConfirm])
 
+    const filterProductByCategory = useCallback((e) => {
+        setProducts(() => [...products].filter((p) => p.category === e.target.value ));
+    },[products])
+
     return(
         <div className="h-screen flex flex-col bg-black overflow-y-scroll">
             <div className="flex items-center justify-center my-2 gap-2">
@@ -211,6 +224,19 @@ const Products = memo(() => {
                 >
                     Reset
                 </button>
+
+                <select 
+                    name="categories" id="category-select"
+                    className="w-20 h-10 bg-blue-900 text-white"
+                    onChange={filterProductByCategory}
+                >
+                    <option value="">All category</option>
+                    {
+                        productCategories.map((cat) => (
+                             <option value={cat}>{cat}</option>
+                        ))
+                    }
+                </select>
 
                <div>
                     <label className="text-white" htmlFor="min-price">Min price</label>
