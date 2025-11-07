@@ -1,9 +1,9 @@
-import Test from "./qa/test";
+import Products from "./components/products";
 
 const App = () => {
 
   return(
-    <Test/>
+    <Products/>
   )
 }
 
